@@ -55,6 +55,44 @@
             border-radius: 2px;
         }
 
+        .filter-section {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px; /* Espacio entre label y select */
+        }
+
+        .filter-section label {
+            font-weight: 600;
+            color: #4b5563;
+            font-size: 1.1rem;
+        }
+
+        .filter-section select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            font-size: 1rem;
+            color: #374151;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            appearance: none; /* Remueve estilos por defecto del sistema operativo */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%236B7280%22%20d%3D%22M287%2C197.8c-3.6%2C3.6-8.2%2C5.4-12.9%2C5.4s-9.3-1.8-12.9-5.4L146.2%2C71.3L31.2%2C197.8c-3.6%2C3.6-8.2%2C5.4-12.9%2C5.4s-9.3-1.8-12.9-5.4c-7.2-7.2-7.2-18.9%2C0-26.1L133.3%2C5.4c7.2-7.2%2C18.9-7.2%2C26.1%2C0l124.9%2C124.9c7.2%2C7.2%2C7.2%2C18.9%2C0%2C26.1z%22%2F%3E%3C%2Fsvg%3E'); /* Flecha personalizada */
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        .filter-section select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+
         table {
             width: 100%;
             border-collapse: separate;
@@ -150,6 +188,16 @@
             h1::after {
                 width: 60px; /* Línea decorativa más corta */
             }
+
+            .filter-section {
+                flex-direction: column; /* Apila label y select en vertical */
+                gap: 10px;
+            }
+            .filter-section select {
+                width: 100%; /* El select ocupa todo el ancho disponible */
+                max-width: 250px; /* Limita el ancho máximo del selector */
+            }
+
             table, thead, tbody, th, td, tr {
                 display: block; /* Apila los elementos de la tabla */
             }
@@ -160,7 +208,7 @@
             }
             tr {
                 border: 1px solid #e5e7eb; /* Borde suave para cada "tarjeta" de fila */
-                margin-bottom: 15px;
+                margin-bottom: 10px; /* Espacio entre filas más compacto */
                 border-radius: 8px;
                 overflow: hidden;
                 box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03); /* Sombra sutil para cada fila */
@@ -168,17 +216,18 @@
             td {
                 border: none;
                 position: relative;
-                padding-left: 50%;
+                padding: 8px 10px; /* Relleno más compacto para celdas */
+                padding-left: 45%; /* Reduce el espacio para la etiqueta */
                 text-align: right;
-                font-size: 0.9rem; /* Fuente más pequeña para las celdas */
+                font-size: 0.85rem; /* Fuente un poco más pequeña para las celdas */
             }
             td:before {
                 /* Etiqueta los datos con el nombre de la columna */
                 position: absolute;
                 top: 0;
-                left: 10px; /* Más espacio a la izquierda */
-                width: 45%;
-                padding-right: 10px;
+                left: 5px; /* Ajusta la posición de la etiqueta */
+                width: 40%; /* Reduce el ancho de la etiqueta */
+                padding-right: 5px; /* Reduce el relleno de la etiqueta */
                 white-space: nowrap;
                 text-align: left;
                 font-weight: 600;
@@ -194,28 +243,33 @@
             td:nth-of-type(6):before { content: "Pulso:"; }
 
             .chart-container {
-                height: 300px; /* Reduce la altura del gráfico en móviles */
-                padding: 15px;
+                height: 280px; /* Reduce la altura del gráfico en móviles */
+                padding: 10px; /* Reduce el padding del contenedor del gráfico */
             }
         }
 
-        /* Estilos para pantallas muy pequeñas (ej. iPhone SE) */
+        /* Estilos para pantallas muy pequeñas (ej. iPhone SE) - ajustes extra de compactación */
         @media (max-width: 480px) {
             .container {
-                padding: 15px;
+                padding: 10px; /* Aún más compacto el padding del contenedor */
             }
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
+                margin-bottom: 15px;
             }
             td {
-                padding-left: 45%; /* Ajusta el padding para pantallas muy pequeñas */
-                font-size: 0.85rem;
+                padding: 6px 8px; /* Relleno mínimo para celdas */
+                padding-left: 40%; /* Ajusta el padding para pantallas muy pequeñas */
+                font-size: 0.8rem; /* Fuente aún más pequeña */
             }
             td:before {
-                width: 40%;
+                width: 35%; /* Ancho de etiqueta más pequeño */
+                left: 3px; /* Etiqueta más al borde */
+                font-size: 0.8rem;
             }
             .chart-container {
-                height: 250px; /* Altura aún menor para gráficos en pantallas muy pequeñas */
+                height: 220px; /* Altura aún menor para gráficos en pantallas muy pequeñas */
+                padding: 8px;
             }
         }
     </style>
@@ -223,6 +277,14 @@
 <body>
     <div class="container">
         <h1>Registro de Presión Arterial y Pulso</h1>
+
+        <div class="filter-section">
+            <label for="dayFilter">Filtrar por Día:</label>
+            <select id="dayFilter">
+                <option value="all">Todos los Días</option>
+                <!-- Las opciones de día se cargarán con JavaScript -->
+            </select>
+        </div>
 
         <table>
             <thead>
@@ -235,80 +297,8 @@
                     <th>Pulso</th>
                 </tr>
             </thead>
-            <tbody>
-                <!-- Datos de la imagen -->
-                <tr>
-                    <td>Mié</td>
-                    <td>04-jun</td>
-                    <td>13:00</td>
-                    <td class="value-cell high">151</td> <!-- Resalta si es un valor alto -->
-                    <td class="value-cell">101</td>
-                    <td class="value-cell">90</td>
-                </tr>
-                <tr>
-                    <td>Mié</td>
-                    <td>04-jun</td>
-                    <td>18:00</td>
-                    <td class="value-cell high">154</td>
-                    <td class="value-cell">104</td>
-                    <td class="value-cell">70</td>
-                </tr>
-                <tr>
-                    <td>Jue</td>
-                    <td>05-jun</td>
-                    <td>09:30</td>
-                    <td class="value-cell">137</td>
-                    <td class="value-cell">91</td>
-                    <td class="value-cell">73</td>
-                </tr>
-                <tr>
-                    <td>Jue</td>
-                    <td>05-jun</td>
-                    <td>17:00</td>
-                    <td class="value-cell">139</td>
-                    <td class="value-cell">88</td>
-                    <td class="value-cell">75</td>
-                </tr>
-                <tr>
-                    <td>Vie</td>
-                    <td>06-jun</td>
-                    <td>06:30</td>
-                    <td class="value-cell">121</td>
-                    <td class="value-cell">79</td>
-                    <td class="value-cell">60</td>
-                </tr>
-                <tr>
-                    <td>Vie</td>
-                    <td>06-jun</td>
-                    <td>19:45</td>
-                    <td class="value-cell">140</td>
-                    <td class="value-cell">100</td>
-                    <td class="value-cell">94</td>
-                </tr>
-                <tr>
-                    <td>Sáb</td>
-                    <td>07-jun</td>
-                    <td>10:15</td>
-                    <td class="value-cell">124</td>
-                    <td class="value-cell">84</td>
-                    <td class="value-cell">83</td>
-                </tr>
-                <tr>
-                    <td>Sáb</td>
-                    <td>07-jun</td>
-                    <td>19:30</td>
-                    <td class="value-cell">139</td>
-                    <td class="value-cell">86</td>
-                    <td class="value-cell">72</td>
-                </tr>
-                <tr>
-                    <td>Dom</td>
-                    <td>08-jun</td>
-                    <td>10:30</td>
-                    <td class="value-cell high">157</td>
-                    <td class="value-cell">71</td>
-                    <td class="value-cell">68</td>
-                </tr>
+            <tbody id="dataTableBody">
+                <!-- Los datos se cargarán con JavaScript -->
             </tbody>
         </table>
 
@@ -318,8 +308,8 @@
     </div>
 
     <script>
-        // Datos extraídos de la tabla para el gráfico
-        const data = [
+        // Datos completos extraídos de la tabla
+        const allData = [
             { day: 'Mié', date: '04-jun', time: '13:00', alta: 151, baja: 101, pulso: 90 },
             { day: 'Mié', date: '04-jun', time: '18:00', alta: 154, baja: 104, pulso: 70 },
             { day: 'Jue', date: '05-jun', time: '09:30', alta: 137, baja: 91, pulso: 73 },
@@ -331,116 +321,181 @@
             { day: 'Dom', date: '08-jun', time: '10:30', alta: 157, baja: 71, pulso: 68 },
         ];
 
-        // Preparar las etiquetas para el eje X (Día - Hora)
-        const labels = data.map(entry => `${entry.day} ${entry.time}`);
+        let pressurePulseChart; // Variable global para la instancia del gráfico
 
-        // Preparar los datos para cada línea del gráfico
-        const altaData = data.map(entry => entry.alta);
-        const bajaData = data.map(entry => entry.baja);
-        const pulsoData = data.map(entry => entry.pulso);
+        // Función para renderizar la tabla con los datos proporcionados
+        function renderTable(dataToRender) {
+            const tableBody = document.getElementById('dataTableBody');
+            tableBody.innerHTML = ''; // Limpiar la tabla existente
 
-        // Obtener el contexto del canvas
-        const ctx = document.getElementById('pressurePulseChart').getContext('2d');
+            dataToRender.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.day}</td>
+                    <td>${entry.date}</td>
+                    <td>${entry.time}</td>
+                    <td class="value-cell ${entry.alta > 140 ? 'high' : ''}">${entry.alta}</td>
+                    <td class="value-cell ${entry.baja < 80 ? 'low' : ''}">${entry.baja}</td>
+                    <td class="value-cell">${entry.pulso}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
 
-        // Crear el gráfico de líneas
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Presión Alta (Sistólica)',
-                        data: altaData,
-                        borderColor: '#ef4444', // Rojo para Presión Alta
-                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                        tension: 0.3, // Curva suave
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                    },
-                    {
-                        label: 'Presión Baja (Diastólica)',
-                        data: bajaData,
-                        borderColor: '#22c55e', // Verde para Presión Baja
-                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                        tension: 0.3,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                    },
-                    {
-                        label: 'Pulso',
-                        data: pulsoData,
-                        borderColor: '#3b82f6', // Azul para Pulso
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        tension: 0.3,
-                        fill: false,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // Permite que el gráfico no mantenga la relación de aspecto y use el 100% del contenedor
-                plugins: {
-                    title: {
-                        display: true,
-                        text: 'Evolución de Presión Arterial y Pulso',
-                        font: {
-                            size: 18,
-                            weight: 'bold'
+        // Función para actualizar o crear el gráfico
+        function updateChart(dataToRender) {
+            const ctx = document.getElementById('pressurePulseChart').getContext('2d');
+
+            // Preparar las etiquetas para el eje X (Día - Hora)
+            const labels = dataToRender.map(entry => `${entry.day} ${entry.time}`);
+
+            // Preparar los datos para cada línea del gráfico
+            const altaData = dataToRender.map(entry => entry.alta);
+            const bajaData = dataToRender.map(entry => entry.baja);
+            const pulsoData = dataToRender.map(entry => entry.pulso);
+
+            // Si ya existe una instancia del gráfico, la destruimos para crear una nueva
+            if (pressurePulseChart) {
+                pressurePulseChart.destroy();
+            }
+
+            pressurePulseChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Presión Alta (Sistólica)',
+                            data: altaData,
+                            borderColor: '#ef4444', // Rojo para Presión Alta
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            tension: 0.3, // Curva suave
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
                         },
-                        color: '#1f2937'
-                    },
-                    tooltip: {
-                        mode: 'index',
-                        intersect: false,
-                    }
+                        {
+                            label: 'Presión Baja (Diastólica)',
+                            data: bajaData,
+                            borderColor: '#22c55e', // Verde para Presión Baja
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        },
+                        {
+                            label: 'Pulso',
+                            data: pulsoData,
+                            borderColor: '#3b82f6', // Azul para Pulso
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                        }
+                    ]
                 },
-                scales: {
-                    x: {
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
                         title: {
                             display: true,
-                            text: 'Día y Hora',
+                            text: 'Evolución de Presión Arterial y Pulso',
                             font: {
-                                size: 14
+                                size: 18,
+                                weight: 'bold'
                             },
-                            color: '#4b5563'
+                            color: '#1f2937'
                         },
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                size: 12 // Tamaño de fuente para las etiquetas del eje X
-                            }
-                        },
-                        grid: {
-                            color: '#e5e7eb'
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
                         }
                     },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Valores',
-                            font: {
-                                size: 14
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Día y Hora',
+                                font: {
+                                    size: 14
+                                },
+                                color: '#4b5563'
                             },
-                            color: '#4b5563'
-                        },
-                        min: 50, // Ajusta el mínimo del eje Y para una mejor visualización
-                        max: 180, // Ajusta el máximo del eje Y
-                        ticks: {
-                            color: '#6b7280',
-                            font: {
-                                size: 12 // Tamaño de fuente para las etiquetas del eje Y
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
                             }
                         },
-                        grid: {
-                            color: '#e5e7eb'
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Valores',
+                                font: {
+                                    size: 14
+                                },
+                                color: '#4b5563'
+                            },
+                            min: 50,
+                            max: 180,
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 12
+                                }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
                         }
                     }
                 }
+            });
+        }
+
+        // Llenar el selector de días
+        function populateDayFilter() {
+            const dayFilter = document.getElementById('dayFilter');
+            const uniqueDays = ['all', ...new Set(allData.map(entry => entry.day))]; // Obtiene días únicos
+
+            uniqueDays.forEach(day => {
+                const option = document.createElement('option');
+                option.value = day;
+                option.textContent = day === 'all' ? 'Todos los Días' : day;
+                dayFilter.appendChild(option);
+            });
+        }
+
+        // Manejador de cambio para el selector de días
+        function handleDayFilterChange() {
+            const selectedDay = document.getElementById('dayFilter').value;
+            let filteredData = [];
+
+            if (selectedDay === 'all') {
+                filteredData = allData;
+            } else {
+                filteredData = allData.filter(entry => entry.day === selectedDay);
             }
+
+            renderTable(filteredData);
+            updateChart(filteredData);
+        }
+
+        // Inicializar la página al cargar
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDayFilter(); // Llenar el selector
+            renderTable(allData); // Mostrar todos los datos inicialmente
+            updateChart(allData); // Cargar el gráfico con todos los datos inicialmente
+
+            // Añadir el event listener al selector
+            document.getElementById('dayFilter').addEventListener('change', handleDayFilterChange);
         });
     </script>
 </body>
