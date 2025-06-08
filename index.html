@@ -140,10 +140,8 @@
         }
 
         /* Estilo para las celdas "Alta" si el valor es alto (ej: >140) */
-        .value-cell.high {
-            color: #dc2626; /* Rojo para valores altos */
-            font-weight: 600;
-        }
+        /* Eliminado: .value-cell.high { color: #dc2626; font-weight: 600; } */
+
 
         /* Estilo para las celdas "Baja" si el valor es bajo (ej: <80) */
         .value-cell.low {
@@ -339,7 +337,7 @@
                 row.innerHTML = `
                     <td>${entry.day} ${entry.date}</td>
                     <td>${entry.time}</td>
-                    <td class="value-cell ${entry.alta > 140 ? 'high' : ''}">${entry.alta}</td>
+                    <td class="value-cell">${entry.alta}</td> <!-- Eliminado el condicional 'high' -->
                     <td class="value-cell ${entry.baja < 80 ? 'low' : ''}">${entry.baja}</td>
                     <td class="value-cell">${entry.pulso}</td>
                 `;
