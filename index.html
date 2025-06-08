@@ -235,12 +235,12 @@
                 line-height: 1.5; /* Ajusta la altura de línea */
             }
             /* Asigna las etiquetas a cada celda (en español argentino) */
-            td:nth-of-type(1):before { content: "Día:"; }
-            td:nth-of-type(2):before { content: "Fecha:"; }
-            td:nth-of-type(3):before { content: "Hora:"; }
-            td:nth-of-type(4):before { content: "Alta:"; }
-            td:nth-of-type(5):before { content: "Baja:"; }
-            td:nth-of-type(6):before { content: "Pulso:"; }
+            td:nth-of-type(1):before { content: "Día y Fecha:"; } /* MODIFICADO */
+            td:nth-of-type(2):before { content: "Hora:"; } /* MODIFICADO */
+            td:nth-of-type(3):before { content: "Alta:"; }
+            td:nth-of-type(4):before { content: "Baja:"; }
+            td:nth-of-type(5):before { content: "Pulso:"; }
+            /* Se eliminaron las etiquetas de Día y Fecha separadas */
 
             .chart-container {
                 height: 280px; /* Reduce la altura del gráfico en móviles */
@@ -289,8 +289,7 @@
         <table>
             <thead>
                 <tr>
-                    <th>Día</th>
-                    <th>Fecha</th>
+                    <th>Día y Fecha</th> <!-- MODIFICADO -->
                     <th>Hora</th>
                     <th>Alta</th>
                     <th>Baja</th>
@@ -322,6 +321,7 @@
         ];
 
         let pressurePulseChart; // Variable global para la instancia del gráfico
+        let currentFilter = 'all'; // Variable para almacenar el filtro actual
 
         // Función para renderizar la tabla con los datos proporcionados
         function renderTable(dataToRender) {
@@ -330,9 +330,9 @@
 
             dataToRender.forEach(entry => {
                 const row = document.createElement('tr');
+                // Unimos Día y Fecha en una sola celda
                 row.innerHTML = `
-                    <td>${entry.day}</td>
-                    <td>${entry.date}</td>
+                    <td>${entry.day} ${entry.date}</td>
                     <td>${entry.time}</td>
                     <td class="value-cell ${entry.alta > 140 ? 'high' : ''}">${entry.alta}</td>
                     <td class="value-cell ${entry.baja < 80 ? 'low' : ''}">${entry.baja}</td>
@@ -344,6 +344,13 @@
 
         // Función para obtener opciones de gráfico responsivas
         function getChartOptions() {
+            // Título del eje X dinámico
+            let xAxisTitle = 'Fecha y Hora';
+            // Si el filtro actual no es 'all' y es un valor de día-fecha válido (contiene '-')
+            if (currentFilter !== 'all' && currentFilter.includes('-')) {
+                xAxisTitle = 'Hora'; // Si se filtra por un día específico, solo mostrar la hora
+            }
+
             if (window.innerWidth <= 768) { // Ajustes para vista móvil (hasta 768px de ancho)
                 return {
                     responsive: true,
@@ -375,7 +382,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Día y Hora',
+                                text: xAxisTitle, // Título dinámico
                                 font: {
                                     size: 10 // Título del eje más pequeño
                                 },
@@ -386,8 +393,9 @@
                                 font: {
                                     size: 8 // Etiquetas de los ticks más pequeñas
                                 },
-                                autoSkip: true, // Habilita el salto automático de etiquetas
-                                maxRotation: 0, // No rotación de etiquetas
+                                // Deshabilitamos autoSkip y rotación para asegurar que se muestren todas las horas en un día filtrado
+                                autoSkip: false,
+                                maxRotation: 0,
                                 minRotation: 0
                             },
                             grid: {
@@ -448,7 +456,7 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Día y Hora',
+                                text: xAxisTitle, // Título dinámico
                                 font: {
                                     size: 14
                                 },
@@ -494,8 +502,14 @@
         function updateChart(dataToRender) {
             const ctx = document.getElementById('pressurePulseChart').getContext('2d');
 
-            // Prepara las etiquetas para el eje X (Día - Hora)
-            const labels = dataToRender.map(entry => `${entry.day} ${entry.time}`);
+            // Prepara las etiquetas para el eje X dinámicamente
+            let labels;
+            // Si el filtro actual no es 'all' y es un valor de día-fecha válido (contiene '-')
+            if (currentFilter !== 'all' && currentFilter.includes('-')) {
+                labels = dataToRender.map(entry => `${entry.time}`); // Solo la hora si se filtra por día
+            } else {
+                labels = dataToRender.map(entry => `${entry.day} ${entry.date} ${entry.time}`);
+            }
 
             // Prepara los datos para cada línea del gráfico
             const altaData = dataToRender.map(entry => entry.alta);
@@ -519,8 +533,8 @@
                             backgroundColor: 'rgba(239, 68, 68, 0.2)',
                             tension: 0.3, // Curva suave
                             fill: false,
-                            pointRadius: window.innerWidth <= 768 ? 3 : 5, // Puntos más pequeños en móvil
-                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                            pointRadius: 5, // Tamaño de punto estándar para visibilidad
+                            pointHoverRadius: 7,
                         },
                         {
                             label: 'Presión Baja (Diastólica)',
@@ -529,8 +543,8 @@
                             backgroundColor: 'rgba(34, 197, 94, 0.2)',
                             tension: 0.3,
                             fill: false,
-                            pointRadius: window.innerWidth <= 768 ? 3 : 5,
-                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
                         },
                         {
                             label: 'Pulso',
@@ -539,31 +553,52 @@
                             backgroundColor: 'rgba(59, 130, 246, 0.2)',
                             tension: 0.3,
                             fill: false,
-                            pointRadius: window.innerWidth <= 768 ? 3 : 5,
-                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
                         }
                     ]
                 },
                 options: getChartOptions() // Usa las opciones dinámicas
             });
+
+            // Para depuración: verificar los datos que llegan al gráfico
+            console.log("Datos filtrados para el gráfico:", dataToRender);
+            console.log("Etiquetas del gráfico (Eje X):", labels);
         }
 
         // Llenar el selector de días
         function populateDayFilter() {
             const dayFilter = document.getElementById('dayFilter');
-            // Usamos un Set para almacenar combinaciones únicas de 'day-date'
-            const uniqueDayDates = new Set();
+            const uniqueDayDateStrings = new Set();
             allData.forEach(entry => {
-                uniqueDayDates.add(`${entry.day}-${entry.date}`);
+                uniqueDayDateStrings.add(`${entry.day}-${entry.date}`);
             });
 
-            // Convertimos el Set a un array y lo ordenamos si es necesario (opcional)
-            const sortedUniqueDayDates = Array.from(uniqueDayDates).sort((a, b) => {
-                // Función de ordenamiento para fechas (ej: "04-jun" antes de "05-jun")
-                const dateA = a.split('-')[1];
-                const dateB = b.split('-')[1];
-                // Simple comparación lexicográfica, idealmente se usaría una función de fecha
-                return dateA.localeCompare(dateB);
+            const sortedUniqueDayDates = Array.from(uniqueDayDateStrings).sort((a, b) => {
+                const datePartA = a.substring(a.indexOf('-') + 1);
+                const datePartB = b.substring(b.indexOf('-') + 1);
+
+                const monthMap = {
+                    'ene': '01', 'feb': '02', 'mar': '03', 'abr': '04', 'may': '05', 'jun': '06',
+                    'jul': '07', 'ago': '08', 'sep': '09', 'oct': '10', 'nov': '11', 'dic': '12'
+                };
+
+                const parseDateStringForSort = (dateStr) => {
+                    const parts = dateStr.split('-');
+                    if (parts.length < 2) {
+                        return '';
+                    }
+                    const [dayNum, monthAbbr] = parts;
+                    if (!monthAbbr || !monthMap[monthAbbr.toLowerCase()]) {
+                        return '';
+                    }
+                    return `2025-${monthMap[monthAbbr.toLowerCase()]}-${dayNum}`;
+                };
+
+                const fullDateA = parseDateStringForSort(datePartA);
+                const fullDateB = parseDateStringForSort(datePartB);
+
+                return fullDateA.localeCompare(fullDateB);
             });
 
 
@@ -575,24 +610,35 @@
 
             // Añadir las opciones únicas al selector
             sortedUniqueDayDates.forEach(dayDateString => {
-                const [day, date] = dayDateString.split('-');
+                // Obtenemos el día de la semana (ej. "Mié") y la fecha completa (ej. "04-jun")
+                const firstHyphenIndex = dayDateString.indexOf('-');
+                const dayOfWeek = dayDateString.substring(0, firstHyphenIndex);
+                const fullDate = dayDateString.substring(firstHyphenIndex + 1); // Esto es "04-jun"
+
                 const option = document.createElement('option');
-                option.value = dayDateString; // El valor ahora es "Día-Fecha"
-                option.textContent = `${day} ${date}`; // El texto es "Día Fecha"
+                option.value = dayDateString; // El valor sigue siendo "Mié-04-jun"
+                option.textContent = `${dayOfWeek} ${fullDate}`; // El texto mostrado es "Mié 04-jun"
                 dayFilter.appendChild(option);
             });
         }
 
         // Manejador de cambio para el selector de días
         function handleDayFilterChange() {
-            const selectedDayDate = document.getElementById('dayFilter').value;
+            currentFilter = document.getElementById('dayFilter').value;
             let filteredData = [];
 
-            if (selectedDayDate === 'all') {
+            if (currentFilter === 'all') {
                 filteredData = allData;
             } else {
-                const [selectedDay, selectedDate] = selectedDayDate.split('-');
-                filteredData = allData.filter(entry => entry.day === selectedDay && entry.date === selectedDate);
+                // Extraemos el día de la semana y la fecha completa del valor del filtro
+                const firstHyphenIndex = currentFilter.indexOf('-');
+                const selectedDay = currentFilter.substring(0, firstHyphenIndex);
+                const selectedDate = currentFilter.substring(firstHyphenIndex + 1); // Esto es "04-jun"
+
+                // Filtra tanto por el día de la semana como por la fecha completa
+                filteredData = allData.filter(entry => 
+                    entry.day === selectedDay && entry.date === selectedDate
+                );
             }
 
             renderTable(filteredData);
@@ -601,27 +647,16 @@
 
         // Inicializar la página al cargar
         document.addEventListener('DOMContentLoaded', () => {
-            populateDayFilter(); // Llenar el selector
-            renderTable(allData); // Mostrar todos los datos inicialmente
-            updateChart(allData); // Cargar el gráfico con todos los datos inicialmente
+            populateDayFilter();
+            renderTable(allData);
+            updateChart(allData);
 
-            // Añadir el event listener al selector
             document.getElementById('dayFilter').addEventListener('change', handleDayFilterChange);
         });
 
         // Añadir event listener para el resize de la ventana
         window.addEventListener('resize', () => {
-            // Re-renderizar el gráfico con los datos actuales para aplicar los nuevos opciones de tamaño
-            const selectedDayDate = document.getElementById('dayFilter').value;
-            let filteredData = [];
-
-            if (selectedDayDate === 'all') {
-                filteredData = allData;
-            } else {
-                const [selectedDay, selectedDate] = selectedDayDate.split('-');
-                filteredData = allData.filter(entry => entry.day === selectedDay && entry.date === selectedDate);
-            }
-            updateChart(filteredData);
+            handleDayFilterChange();
         });
     </script>
 </body>
