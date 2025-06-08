@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Presión Arterial y Pulso</title>
+    <!-- Incluye Tailwind CSS para estilos modernos y responsivos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Incluye Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Estilos base para un look profesional y estético */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Fondo suave */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinea arriba para evitar mucho espacio en pantallas pequeñas */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            color: #374151; /* Texto oscuro pero no negro absoluto */
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px; /* Bordes más redondeados */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); /* Sombra más pronunciada */
+            padding: 40px;
+            width: 100%;
+            max-width: 900px; /* Ancho máximo para la tabla y gráfico */
+            text-align: center;
+            border: 1px solid #e2e8f0; /* Borde sutil */
+        }
+
+        h1 {
+            color: #1a202c; /* Título más oscuro */
+            margin-bottom: 30px;
+            font-size: 2.5rem; /* Tamaño de fuente más grande */
+            font-weight: 700; /* Negrita */
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 0;
+            width: 80px;
+            height: 4px;
+            background-color: #3b82f6; /* Línea decorativa azul */
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-top: 40px; /* Más espacio superior */
+            overflow: hidden;
+            border-radius: 12px; /* Bordes redondeados para la tabla */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); /* Sombra suave para la tabla */
+            margin-bottom: 40px; /* Espacio antes del gráfico */
+        }
+
+        th, td {
+            padding: 18px 15px; /* Relleno generoso */
+            text-align: center;
+            border-bottom: 1px solid #e5e7eb; /* Líneas divisorias suaves */
+        }
+
+        th {
+            background-color: #3b82f6; /* Encabezado azul */
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9fafb; /* Filas pares con un fondo más claro */
+        }
+
+        tr:hover {
+            background-color: #e0f2fe; /* Efecto hover sutil */
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        td {
+            font-size: 1rem;
+            color: #4b5563;
+        }
+
+        /* Estilos específicos para las celdas de valores de presión y pulso */
+        .value-cell {
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        /* Estilo para las celdas "Alta" si el valor es alto (ej: >140) */
+        .value-cell.high {
+            color: #dc2626; /* Rojo para valores altos */
+            font-weight: 600;
+        }
+
+        /* Estilo para las celdas "Baja" si el valor es bajo (ej: <80) */
+        .value-cell.low {
+            color: #10b981; /* Verde para valores normales/bajos */
+        }
+
+        /* Estilos para el área del gráfico */
+        .chart-container {
+            position: relative;
+            height: 400px; /* Altura fija para el gráfico en escritorio */
+            width: 100%;
+            margin-top: 30px;
+            background-color: #fcfcfc;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            /* Asegura que el canvas se adapte al contenedor */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto !important; /* Permite que el gráfico se adapte en altura */
+        }
+
+        /* Responsive design - Ajustes para pantallas pequeñas (hasta 768px) */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Reduce el padding global en móviles */
+                align-items: flex-start; /* Alinea arriba para mejor uso del espacio */
+            }
+            .container {
+                padding: 20px; /* Reduce el padding interno del contenedor */
+                border-radius: 8px; /* Bordes un poco menos redondeados en móviles */
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05); /* Sombra más suave */
+            }
+            h1 {
+                font-size: 1.8rem; /* Tamaño de fuente más pequeño para el título */
+                margin-bottom: 20px;
+            }
+            h1::after {
+                width: 60px; /* Línea decorativa más corta */
+            }
+            table, thead, tbody, th, td, tr {
+                display: block; /* Apila los elementos de la tabla */
+            }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            tr {
+                border: 1px solid #e5e7eb; /* Borde suave para cada "tarjeta" de fila */
+                margin-bottom: 15px;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03); /* Sombra sutil para cada fila */
+            }
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+                font-size: 0.9rem; /* Fuente más pequeña para las celdas */
+            }
+            td:before {
+                /* Etiqueta los datos con el nombre de la columna */
+                position: absolute;
+                top: 0;
+                left: 10px; /* Más espacio a la izquierda */
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: #2563eb;
+                line-height: 1.5; /* Ajusta la altura de línea */
+            }
+            /* Asigna las etiquetas a cada celda (en español argentino) */
+            td:nth-of-type(1):before { content: "Día:"; }
+            td:nth-of-type(2):before { content: "Fecha:"; }
+            td:nth-of-type(3):before { content: "Hora:"; }
+            td:nth-of-type(4):before { content: "Alta:"; }
+            td:nth-of-type(5):before { content: "Baja:"; }
+            td:nth-of-type(6):before { content: "Pulso:"; }
+
+            .chart-container {
+                height: 300px; /* Reduce la altura del gráfico en móviles */
+                padding: 15px;
+            }
+        }
+
+        /* Estilos para pantallas muy pequeñas (ej. iPhone SE) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            td {
+                padding-left: 45%; /* Ajusta el padding para pantallas muy pequeñas */
+                font-size: 0.85rem;
+            }
+            td:before {
+                width: 40%;
+            }
+            .chart-container {
+                height: 250px; /* Altura aún menor para gráficos en pantallas muy pequeñas */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Registro de Presión Arterial y Pulso</h1>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Día</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Alta</th>
+                    <th>Baja</th>
+                    <th>Pulso</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Datos de la imagen -->
+                <tr>
+                    <td>Mié</td>
+                    <td>04-jun</td>
+                    <td>13:00</td>
+                    <td class="value-cell high">151</td> <!-- Resalta si es un valor alto -->
+                    <td class="value-cell">101</td>
+                    <td class="value-cell">90</td>
+                </tr>
+                <tr>
+                    <td>Mié</td>
+                    <td>04-jun</td>
+                    <td>18:00</td>
+                    <td class="value-cell high">154</td>
+                    <td class="value-cell">104</td>
+                    <td class="value-cell">70</td>
+                </tr>
+                <tr>
+                    <td>Jue</td>
+                    <td>05-jun</td>
+                    <td>09:30</td>
+                    <td class="value-cell">137</td>
+                    <td class="value-cell">91</td>
+                    <td class="value-cell">73</td>
+                </tr>
+                <tr>
+                    <td>Jue</td>
+                    <td>05-jun</td>
+                    <td>17:00</td>
+                    <td class="value-cell">139</td>
+                    <td class="value-cell">88</td>
+                    <td class="value-cell">75</td>
+                </tr>
+                <tr>
+                    <td>Vie</td>
+                    <td>06-jun</td>
+                    <td>06:30</td>
+                    <td class="value-cell">121</td>
+                    <td class="value-cell">79</td>
+                    <td class="value-cell">60</td>
+                </tr>
+                <tr>
+                    <td>Vie</td>
+                    <td>06-jun</td>
+                    <td>19:45</td>
+                    <td class="value-cell">140</td>
+                    <td class="value-cell">100</td>
+                    <td class="value-cell">94</td>
+                </tr>
+                <tr>
+                    <td>Sáb</td>
+                    <td>07-jun</td>
+                    <td>10:15</td>
+                    <td class="value-cell">124</td>
+                    <td class="value-cell">84</td>
+                    <td class="value-cell">83</td>
+                </tr>
+                <tr>
+                    <td>Sáb</td>
+                    <td>07-jun</td>
+                    <td>19:30</td>
+                    <td class="value-cell">139</td>
+                    <td class="value-cell">86</td>
+                    <td class="value-cell">72</td>
+                </tr>
+                <tr>
+                    <td>Dom</td>
+                    <td>08-jun</td>
+                    <td>10:30</td>
+                    <td class="value-cell high">157</td>
+                    <td class="value-cell">71</td>
+                    <td class="value-cell">68</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="chart-container">
+            <canvas id="pressurePulseChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Datos extraídos de la tabla para el gráfico
+        const data = [
+            { day: 'Mié', date: '04-jun', time: '13:00', alta: 151, baja: 101, pulso: 90 },
+            { day: 'Mié', date: '04-jun', time: '18:00', alta: 154, baja: 104, pulso: 70 },
+            { day: 'Jue', date: '05-jun', time: '09:30', alta: 137, baja: 91, pulso: 73 },
+            { day: 'Jue', date: '05-jun', time: '17:00', alta: 139, baja: 88, pulso: 75 },
+            { day: 'Vie', date: '06-jun', time: '06:30', alta: 121, baja: 79, pulso: 60 },
+            { day: 'Vie', date: '06-jun', time: '19:45', alta: 140, baja: 100, pulso: 94 },
+            { day: 'Sáb', date: '07-jun', time: '10:15', alta: 124, baja: 84, pulso: 83 },
+            { day: 'Sáb', date: '07-jun', time: '19:30', alta: 139, baja: 86, pulso: 72 },
+            { day: 'Dom', date: '08-jun', time: '10:30', alta: 157, baja: 71, pulso: 68 },
+        ];
+
+        // Preparar las etiquetas para el eje X (Día - Hora)
+        const labels = data.map(entry => `${entry.day} ${entry.time}`);
+
+        // Preparar los datos para cada línea del gráfico
+        const altaData = data.map(entry => entry.alta);
+        const bajaData = data.map(entry => entry.baja);
+        const pulsoData = data.map(entry => entry.pulso);
+
+        // Obtener el contexto del canvas
+        const ctx = document.getElementById('pressurePulseChart').getContext('2d');
+
+        // Crear el gráfico de líneas
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Presión Alta (Sistólica)',
+                        data: altaData,
+                        borderColor: '#ef4444', // Rojo para Presión Alta
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                        tension: 0.3, // Curva suave
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    },
+                    {
+                        label: 'Presión Baja (Diastólica)',
+                        data: bajaData,
+                        borderColor: '#22c55e', // Verde para Presión Baja
+                        backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                        tension: 0.3,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    },
+                    {
+                        label: 'Pulso',
+                        data: pulsoData,
+                        borderColor: '#3b82f6', // Azul para Pulso
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        tension: 0.3,
+                        fill: false,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false, // Permite que el gráfico no mantenga la relación de aspecto y use el 100% del contenedor
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Evolución de Presión Arterial y Pulso',
+                        font: {
+                            size: 18,
+                            weight: 'bold'
+                        },
+                        color: '#1f2937'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Día y Hora',
+                            font: {
+                                size: 14
+                            },
+                            color: '#4b5563'
+                        },
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 12 // Tamaño de fuente para las etiquetas del eje X
+                            }
+                        },
+                        grid: {
+                            color: '#e5e7eb'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Valores',
+                            font: {
+                                size: 14
+                            },
+                            color: '#4b5563'
+                        },
+                        min: 50, // Ajusta el mínimo del eje Y para una mejor visualización
+                        max: 180, // Ajusta el máximo del eje Y
+                        ticks: {
+                            color: '#6b7280',
+                            font: {
+                                size: 12 // Tamaño de fuente para las etiquetas del eje Y
+                            }
+                        },
+                        grid: {
+                            color: '#e5e7eb'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
