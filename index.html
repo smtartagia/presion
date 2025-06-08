@@ -342,61 +342,83 @@
             });
         }
 
-        // Función para actualizar o crear el gráfico
-        function updateChart(dataToRender) {
-            const ctx = document.getElementById('pressurePulseChart').getContext('2d');
-
-            // Preparar las etiquetas para el eje X (Día - Hora)
-            const labels = dataToRender.map(entry => `${entry.day} ${entry.time}`);
-
-            // Preparar los datos para cada línea del gráfico
-            const altaData = dataToRender.map(entry => entry.alta);
-            const bajaData = dataToRender.map(entry => entry.baja);
-            const pulsoData = dataToRender.map(entry => entry.pulso);
-
-            // Si ya existe una instancia del gráfico, la destruimos para crear una nueva
-            if (pressurePulseChart) {
-                pressurePulseChart.destroy();
-            }
-
-            pressurePulseChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Presión Alta (Sistólica)',
-                            data: altaData,
-                            borderColor: '#ef4444', // Rojo para Presión Alta
-                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
-                            tension: 0.3, // Curva suave
-                            fill: false,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
+        // Función para obtener opciones de gráfico responsivas
+        function getChartOptions() {
+            if (window.innerWidth <= 768) { // Ajustes para vista móvil (hasta 768px de ancho)
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Evolución de Presión Arterial y Pulso',
+                            font: {
+                                size: 14, // Título más pequeño
+                                weight: 'bold'
+                            },
+                            color: '#1f2937'
                         },
-                        {
-                            label: 'Presión Baja (Diastólica)',
-                            data: bajaData,
-                            borderColor: '#22c55e', // Verde para Presión Baja
-                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
-                            tension: 0.3,
-                            fill: false,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
                         },
-                        {
-                            label: 'Pulso',
-                            data: pulsoData,
-                            borderColor: '#3b82f6', // Azul para Pulso
-                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                            tension: 0.3,
-                            fill: false,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
+                        legend: {
+                            position: 'bottom', // Mueve la leyenda a la parte inferior
+                            labels: {
+                                font: {
+                                    size: 10 // Fuente más pequeña para la leyenda
+                                }
+                            }
                         }
-                    ]
-                },
-                options: {
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Día y Hora',
+                                font: {
+                                    size: 10 // Título del eje más pequeño
+                                },
+                                color: '#4b5563'
+                            },
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 8 // Etiquetas de los ticks más pequeñas
+                                },
+                                autoSkip: true, // Habilita el salto automático de etiquetas
+                                maxRotation: 0, // No rotación de etiquetas
+                                minRotation: 0
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Valores',
+                                font: {
+                                    size: 10 // Título del eje más pequeño
+                                },
+                                color: '#4b5563'
+                            },
+                            min: 50,
+                            max: 180,
+                            ticks: {
+                                color: '#6b7280',
+                                font: {
+                                    size: 10 // Etiquetas de los ticks más pequeñas
+                                }
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                };
+            } else { // Vista de escritorio (opciones existentes)
+                return {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
@@ -412,6 +434,14 @@
                         tooltip: {
                             mode: 'index',
                             intersect: false,
+                        },
+                        legend: {
+                            position: 'top', // Posición de la leyenda por defecto
+                            labels: {
+                                font: {
+                                    size: 12
+                                }
+                            }
                         }
                     },
                     scales: {
@@ -456,32 +486,113 @@
                             }
                         }
                     }
-                }
+                };
+            }
+        }
+
+        // Función para actualizar o crear el gráfico
+        function updateChart(dataToRender) {
+            const ctx = document.getElementById('pressurePulseChart').getContext('2d');
+
+            // Prepara las etiquetas para el eje X (Día - Hora)
+            const labels = dataToRender.map(entry => `${entry.day} ${entry.time}`);
+
+            // Prepara los datos para cada línea del gráfico
+            const altaData = dataToRender.map(entry => entry.alta);
+            const bajaData = dataToRender.map(entry => entry.baja);
+            const pulsoData = dataToRender.map(entry => entry.pulso);
+
+            // Si ya existe una instancia del gráfico, la destruimos para crear una nueva
+            if (pressurePulseChart) {
+                pressurePulseChart.destroy();
+            }
+
+            pressurePulseChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Presión Alta (Sistólica)',
+                            data: altaData,
+                            borderColor: '#ef4444', // Rojo para Presión Alta
+                            backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                            tension: 0.3, // Curva suave
+                            fill: false,
+                            pointRadius: window.innerWidth <= 768 ? 3 : 5, // Puntos más pequeños en móvil
+                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                        },
+                        {
+                            label: 'Presión Baja (Diastólica)',
+                            data: bajaData,
+                            borderColor: '#22c55e', // Verde para Presión Baja
+                            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: window.innerWidth <= 768 ? 3 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                        },
+                        {
+                            label: 'Pulso',
+                            data: pulsoData,
+                            borderColor: '#3b82f6', // Azul para Pulso
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            tension: 0.3,
+                            fill: false,
+                            pointRadius: window.innerWidth <= 768 ? 3 : 5,
+                            pointHoverRadius: window.innerWidth <= 768 ? 5 : 7,
+                        }
+                    ]
+                },
+                options: getChartOptions() // Usa las opciones dinámicas
             });
         }
 
         // Llenar el selector de días
         function populateDayFilter() {
             const dayFilter = document.getElementById('dayFilter');
-            const uniqueDays = ['all', ...new Set(allData.map(entry => entry.day))]; // Obtiene días únicos
+            // Usamos un Set para almacenar combinaciones únicas de 'day-date'
+            const uniqueDayDates = new Set();
+            allData.forEach(entry => {
+                uniqueDayDates.add(`${entry.day}-${entry.date}`);
+            });
 
-            uniqueDays.forEach(day => {
+            // Convertimos el Set a un array y lo ordenamos si es necesario (opcional)
+            const sortedUniqueDayDates = Array.from(uniqueDayDates).sort((a, b) => {
+                // Función de ordenamiento para fechas (ej: "04-jun" antes de "05-jun")
+                const dateA = a.split('-')[1];
+                const dateB = b.split('-')[1];
+                // Simple comparación lexicográfica, idealmente se usaría una función de fecha
+                return dateA.localeCompare(dateB);
+            });
+
+
+            // Opción "Todos los Días"
+            const allOption = document.createElement('option');
+            allOption.value = 'all';
+            allOption.textContent = 'Todos los Días';
+            dayFilter.appendChild(allOption);
+
+            // Añadir las opciones únicas al selector
+            sortedUniqueDayDates.forEach(dayDateString => {
+                const [day, date] = dayDateString.split('-');
                 const option = document.createElement('option');
-                option.value = day;
-                option.textContent = day === 'all' ? 'Todos los Días' : day;
+                option.value = dayDateString; // El valor ahora es "Día-Fecha"
+                option.textContent = `${day} ${date}`; // El texto es "Día Fecha"
                 dayFilter.appendChild(option);
             });
         }
 
         // Manejador de cambio para el selector de días
         function handleDayFilterChange() {
-            const selectedDay = document.getElementById('dayFilter').value;
+            const selectedDayDate = document.getElementById('dayFilter').value;
             let filteredData = [];
 
-            if (selectedDay === 'all') {
+            if (selectedDayDate === 'all') {
                 filteredData = allData;
             } else {
-                filteredData = allData.filter(entry => entry.day === selectedDay);
+                const [selectedDay, selectedDate] = selectedDayDate.split('-');
+                filteredData = allData.filter(entry => entry.day === selectedDay && entry.date === selectedDate);
             }
 
             renderTable(filteredData);
@@ -496,6 +607,21 @@
 
             // Añadir el event listener al selector
             document.getElementById('dayFilter').addEventListener('change', handleDayFilterChange);
+        });
+
+        // Añadir event listener para el resize de la ventana
+        window.addEventListener('resize', () => {
+            // Re-renderizar el gráfico con los datos actuales para aplicar los nuevos opciones de tamaño
+            const selectedDayDate = document.getElementById('dayFilter').value;
+            let filteredData = [];
+
+            if (selectedDayDate === 'all') {
+                filteredData = allData;
+            } else {
+                const [selectedDay, selectedDate] = selectedDayDate.split('-');
+                filteredData = allData.filter(entry => entry.day === selectedDay && entry.date === selectedDate);
+            }
+            updateChart(filteredData);
         });
     </script>
 </body>
