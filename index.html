@@ -186,6 +186,11 @@
                 margin-bottom: 20px;
             }
             h1::after {
+                content: '';
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                bottom: 0;
                 width: 60px; /* Línea decorativa más corta */
             }
 
@@ -569,6 +574,9 @@
         // Llenar el selector de días
         function populateDayFilter() {
             const dayFilter = document.getElementById('dayFilter');
+            // Limpiar las opciones existentes para evitar duplicados si se llama varias veces.
+            dayFilter.innerHTML = '<option value="all">Todos los Días</option>';
+
             const uniqueDayDateStrings = new Set();
             allData.forEach(entry => {
                 uniqueDayDateStrings.add(`${entry.day}-${entry.date}`);
@@ -602,18 +610,11 @@
             });
 
 
-            // Opción "Todos los Días"
-            const allOption = document.createElement('option');
-            allOption.value = 'all';
-            allOption.textContent = 'Todos los Días';
-            dayFilter.appendChild(allOption);
-
             // Añadir las opciones únicas al selector
             sortedUniqueDayDates.forEach(dayDateString => {
-                // Obtenemos el día de la semana (ej. "Mié") y la fecha completa (ej. "04-jun")
                 const firstHyphenIndex = dayDateString.indexOf('-');
                 const dayOfWeek = dayDateString.substring(0, firstHyphenIndex);
-                const fullDate = dayDateString.substring(firstHyphenIndex + 1); // Esto es "04-jun"
+                const fullDate = dayDateString.substring(firstHyphenIndex + 1);
 
                 const option = document.createElement('option');
                 option.value = dayDateString; // El valor sigue siendo "Mié-04-jun"
@@ -633,7 +634,7 @@
                 // Extraemos el día de la semana y la fecha completa del valor del filtro
                 const firstHyphenIndex = currentFilter.indexOf('-');
                 const selectedDay = currentFilter.substring(0, firstHyphenIndex);
-                const selectedDate = currentFilter.substring(firstHyphenIndex + 1); // Esto es "04-jun"
+                const selectedDate = currentFilter.substring(firstHyphenIndex + 1);
 
                 // Filtra tanto por el día de la semana como por la fecha completa
                 filteredData = allData.filter(entry => 
