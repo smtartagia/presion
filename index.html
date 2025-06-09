@@ -139,14 +139,10 @@
             color: #1f2937;
         }
 
-        /* Estilo para las celdas "Alta" si el valor es alto (ej: >140) */
-        /* Eliminado: .value-cell.high { color: #dc2626; font-weight: 600; } */
-
-
-        /* Estilo para las celdas "Baja" si el valor es bajo (ej: <80) */
-        .value-cell.low {
-            color: #10b981; /* Verde para valores normales/bajos */
-        }
+        /* Eliminado: Estilo para las celdas "Baja" si el valor es bajo (ej: <80) */
+        /* .value-cell.low {
+            color: #10b981;
+        } */
 
         /* Estilos para el área del gráfico */
         .chart-container {
@@ -240,8 +236,8 @@
             /* Asigna las etiquetas a cada celda (en español argentino) */
             td:nth-of-type(1):before { content: "Día y Fecha:"; }
             td:nth-of-type(2):before { content: "Hora:"; }
-            td:nth-of-type(3):before { content: "Máxima:"; } /* MODIFICADO */
-            td:nth-of-type(4):before { content: "Mínima:"; } /* MODIFICADO */
+            td:nth-of-type(3):before { content: "Máxima:"; }
+            td:nth-of-type(4):before { content: "Mínima:"; }
             td:nth-of-type(5):before { content: "Pulso:"; }
 
             .chart-container {
@@ -293,8 +289,8 @@
                 <tr>
                     <th>Día y Fecha</th>
                     <th>Hora</th>
-                    <th>Máxima</th> <!-- MODIFICADO -->
-                    <th>Mínima</th> <!-- MODIFICADO -->
+                    <th>Máxima</th>
+                    <th>Mínima</th>
                     <th>Pulso</th>
                 </tr>
             </thead>
@@ -319,7 +315,9 @@
             { day: 'Vie', date: '06-jun', time: '19:45', alta: 140, baja: 100, pulso: 94 },
             { day: 'Sáb', date: '07-jun', time: '10:15', alta: 124, baja: 84, pulso: 83 },
             { day: 'Sáb', date: '07-jun', time: '19:30', alta: 139, baja: 86, pulso: 72 },
-            { day: 'Dom', date: '08-jun', time: '10:30', alta: 157, baja: 71, pulso: 68 },
+            { day: 'Dom', date: '08-jun', time: '10:30', alta: 157, baja: 75, pulso: 75 },
+            { day: 'Dom', date: '08-jun', time: '23:00', alta: 144, baja: 86, pulso: 68 },
+            { day: 'Lun', date: '09-jun', time: '09:10', alta: 122, baja: 83, pulso: 66 },
         ];
 
         let pressurePulseChart; // Variable global para la instancia del gráfico
@@ -337,7 +335,7 @@
                     <td>${entry.day} ${entry.date}</td>
                     <td>${entry.time}</td>
                     <td class="value-cell">${entry.alta}</td>
-                    <td class="value-cell ${entry.baja < 80 ? 'low' : ''}">${entry.baja}</td>
+                    <td class="value-cell">${entry.baja}</td> <!-- Eliminado el condicional 'low' -->
                     <td class="value-cell">${entry.pulso}</td>
                 `;
                 tableBody.appendChild(row);
@@ -529,7 +527,7 @@
                     labels: labels,
                     datasets: [
                         {
-                            label: 'Presión Máxima (Sistólica)', // MODIFICADO
+                            label: 'Presión Máxima (Sistólica)',
                             data: altaData,
                             borderColor: '#ef4444', // Rojo para Presión Alta
                             backgroundColor: 'rgba(239, 68, 68, 0.2)',
@@ -539,7 +537,7 @@
                             pointHoverRadius: 7,
                         },
                         {
-                            label: 'Presión Mínima (Diastólica)', // MODIFICADO
+                            label: 'Presión Mínima (Diastólica)',
                             data: bajaData,
                             borderColor: '#22c55e', // Verde para Presión Baja
                             backgroundColor: 'rgba(34, 197, 94, 0.2)',
