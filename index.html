@@ -318,6 +318,11 @@
             { day: 'Dom', date: '08-jun', time: '10:30', alta: 157, baja: 75, pulso: 75 },
             { day: 'Dom', date: '08-jun', time: '23:00', alta: 144, baja: 86, pulso: 68 },
             { day: 'Lun', date: '09-jun', time: '09:10', alta: 122, baja: 83, pulso: 66 },
+            { day: 'Lun', date: '09-jun', time: '18:00', alta: 119, baja: 100, pulso: 86 },
+            { day: 'Ma', date: '10-jun', time: '09:30', alta: 121, baja: 73, pulso: 73 },
+            { day: 'Ma', date: '10-jun', time: '18:00', alta: 119, baja: 76, pulso: 86 },
+            { day: 'Mié', date: '11-jun', time: '06:30', alta: 132, baja: 70, pulso: 67 },
+            { day: 'Mié', date: '11-jun', time: '20:00', alta: 133, baja: 77, pulso: 103 },
         ];
 
         let pressurePulseChart; // Variable global para la instancia del gráfico
@@ -335,7 +340,7 @@
                     <td>${entry.day} ${entry.date}</td>
                     <td>${entry.time}</td>
                     <td class="value-cell">${entry.alta}</td>
-                    <td class="value-cell">${entry.baja}</td> <!-- Eliminado el condicional 'low' -->
+                    <td class="value-cell">${entry.baja}</td>
                     <td class="value-cell">${entry.pulso}</td>
                 `;
                 tableBody.appendChild(row);
@@ -529,7 +534,7 @@
                         {
                             label: 'Presión Máxima (Sistólica)',
                             data: altaData,
-                            borderColor: '#ef4444', // Rojo para Presión Alta
+                            borderColor: '#ef4444', // Rojo para Presión Máxima
                             backgroundColor: 'rgba(239, 68, 68, 0.2)',
                             tension: 0.3, // Curva suave
                             fill: false,
@@ -539,7 +544,7 @@
                         {
                             label: 'Presión Mínima (Diastólica)',
                             data: bajaData,
-                            borderColor: '#22c55e', // Verde para Presión Baja
+                            borderColor: '#22c55e', // Verde para Presión Mínima
                             backgroundColor: 'rgba(34, 197, 94, 0.2)',
                             tension: 0.3,
                             fill: false,
